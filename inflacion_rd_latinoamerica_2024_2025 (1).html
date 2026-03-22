@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inflación RD vs Latinoamérica 2024–2025</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #fff; color: #1a1a1a; padding: 2rem; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 600; color: #185FA5; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #666; margin-bottom: 1.5rem; }
+  .metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2rem; }
+  .metric-card { background: #f4f8fc; border-radius: 8px; padding: 1rem; text-align: center; }
+  .metric-val { font-size: 22px; font-weight: 600; }
+  .metric-lbl { font-size: 12px; color: #666; margin-top: 4px; }
+  .chart-section { margin-bottom: 2.5rem; }
+  .chart-title { font-size: 14px; font-weight: 600; color: #2E4A6E; margin-bottom: 8px; }
+  .legend-row { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 8px; }
+  .legend-row span { display: flex; align-items: center; gap: 4px; }
+  .legend-box { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .note { font-size: 11px; color: #999; margin-top: 6px; font-style: italic; }
+  hr { border: none; border-top: 1.5px solid #185FA5; margin: 1.5rem 0; }
+</style>
+</head>
+<body>
+
+<h1>Inflación: República Dominicana vs. Latinoamérica</h1>
+<p class="subtitle">Comparativo 2024–2025 | Análisis de Estados Financieros — Grupo #1 | PUCMM, Marzo 2026</p>
+
+<div class="metric-row">
+  <div class="metric-card">
+    <div class="metric-val" style="color:#185FA5;">3.30%</div>
+    <div class="metric-lbl">Inflación RD 2024</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-val" style="color:#BA7517;">4.95%</div>
+    <div class="metric-lbl">Inflación RD 2025</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-val" style="color:#3B6D11;">+1.65pp</div>
+    <div class="metric-lbl">Variación anual</div>
+  </div>
+</div>
+
+<hr>
+
+<div class="chart-section">
+  <div class="chart-title">Inflación por país — Comparativo 2024 vs. 2025</div>
+  <div class="legend-row">
+    <span><span class="legend-box" style="background:#378ADD;"></span>Inflación 2024 (%)</span>
+    <span><span class="legend-box" style="background:#BA7517;"></span>Inflación 2025 (%)</span>
+    <span><span class="legend-box" style="background:#185FA5;"></span>Rep. Dominicana 2024</span>
+    <span><span class="legend-box" style="background:#854F0B;"></span>Rep. Dominicana 2025</span>
+  </div>
+  <div style="position:relative; width:100%; height:420px;">
+    <canvas id="chart1"></canvas>
+  </div>
+  <p class="note">Nota: Bolivia (20.40%), Argentina (31.50%) y Venezuela (60%) excluidas de este gráfico para mejorar la lectura de los demás países.</p>
+</div>
+
+<hr>
+
+<div class="chart-section">
+  <div class="chart-title">Evolución histórica y proyección de inflación — República Dominicana (2020–2027)</div>
+  <div class="legend-row">
+    <span><span class="legend-box" style="background:#185FA5;"></span>Inflación RD histórica</span>
+    <span><span class="legend-box" style="background:#1D9E75;"></span>Proyección 2026–2027</span>
+    <span><span class="legend-box" style="background:#E24B4A;"></span>Límite meta superior (5%)</span>
+    <span><span class="legend-box" style="background:#639922;"></span>Meta central (4%)</span>
+  </div>
+  <div style="position:relative; width:100%; height:280px;">
+    <canvas id="chart2"></canvas>
+  </div>
+  <p class="note">Fuente: Banco Central de la República Dominicana (BCRD), CEPAL y estimaciones del grupo. Proyecciones bajo escenario base moderado.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const countries = ['Costa Rica','Panamá','El Salvador','Perú','Guatemala','Ecuador','Paraguay','Chile','Uruguay','México','Brasil','Rep. Dom.','Honduras','Colombia'];
+const data2024 = [0.84, 0.70, 0.30, 1.70, 3.20, 1.40, 3.40, 4.80, 5.11, 4.20, 4.62, 3.30, 3.90, 5.20];
+const data2025 = [-1.23, -0.20, 0.91, 1.51, 1.65, 1.91, 3.10, 3.50, 3.65, 3.69, 4.26, 4.95, 4.98, 5.10];
+
+const bg2024 = countries.map(c => c === 'Rep. Dom.' ? '#185FA5' : '#85B7EB');
+const bg2025 = countries.map(c => c === 'Rep. Dom.' ? '#854F0B' : '#EF9F27');
+
+new Chart(document.getElementById('chart1'), {
+  type: 'bar',
+  data: {
+    labels: countries,
+    datasets: [
+      { label: 'Inflación 2024 (%)', data: data2024, backgroundColor: bg2024, borderRadius: 3 },
+      { label: 'Inflación 2025 (%)', data: data2025, backgroundColor: bg2025, borderRadius: 3 }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%' } }
+    },
+    scales: {
+      x: { ticks: { font: { size: 11 }, autoSkip: false, maxRotation: 45 }, grid: { display: false } },
+      y: {
+        ticks: { callback: v => v + '%', font: { size: 11 } },
+        title: { display: true, text: 'Tasa de inflación (%)', font: { size: 12 } }
+      }
+    }
+  }
+});
+
+new Chart(document.getElementById('chart2'), {
+  type: 'line',
+  data: {
+    labels: ['2020','2021','2022','2023','2024','2025','2026 (proy.)','2027 (proy.)'],
+    datasets: [
+      {
+        label: 'Inflación RD',
+        data: [3.78, 8.48, 7.83, 4.07, 3.30, 4.95, 4.6, 4.2],
+        borderColor: '#185FA5',
+        backgroundColor: 'rgba(55,138,221,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointBackgroundColor: ['#185FA5','#185FA5','#185FA5','#185FA5','#185FA5','#185FA5','#1D9E75','#1D9E75']
+      },
+      {
+        label: 'Límite meta superior (5%)',
+        data: [5,5,5,5,5,5,5,5],
+        borderColor: '#E24B4A',
+        borderDash: [6,4],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: false
+      },
+      {
+        label: 'Meta central (4%)',
+        data: [4,4,4,4,4,4,4,4],
+        borderColor: '#639922',
+        borderDash: [4,4],
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%' } }
+    },
+    scales: {
+      x: { ticks: { font: { size: 11 } }, grid: { display: false } },
+      y: {
+        ticks: { callback: v => v + '%', font: { size: 11 } },
+        title: { display: true, text: 'Inflación (%)', font: { size: 12 } },
+        min: 0, max: 11
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
